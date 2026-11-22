@@ -1,7 +1,9 @@
-import sqlite3 as mysql
+import mysql.connector as mysql
 
-connection = mysql.connect("budgetTracker.db")
+password = input("Password: ")
+connection = mysql.connect(user="root", host="localhost", passwd=password)
 cursor = connection.cursor()
+cursor.execute("use budgetTracker")
 
 cursor.execute("""
     insert into income values
