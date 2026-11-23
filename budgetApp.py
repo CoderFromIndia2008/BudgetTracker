@@ -1,5 +1,5 @@
 from utils import box_print, valid_choice
-import dbtools2 as dbtools
+import dbtools
 import pickle
 
 #SUB MENUS
