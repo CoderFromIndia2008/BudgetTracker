@@ -1,4 +1,4 @@
-from box_print import box_print
+from utils import box_print, valid_choice
 import dbtools2 as dbtools
 import pickle
 
@@ -19,20 +19,19 @@ def review_transactions():
         )
         
         box_print(options, title="Choose a filter")
-        choice = input("~ ")
-        print()
+        choice = valid_choice(6)
         
         if choice == "0":
             break
-            
+        
         elif choice == "1":
-            choice = input("Enter (1) Income or (2) Expense: ") or 1
-            
-            try:
+            choice = input("Choose (1) Income or (2) Expense: ") or "1"
+                
+            if choice.isdigit() and choice in ("1", "2"):
                 table = ["Income", "Expense"][int(choice) - 1]
                 
-            except:
-                print("Invalid input")
+            else:
+                print("Invalid selection.")
                 
         elif choice == "2":
             choice = input("Enter transaction ID: ") or "all"
@@ -41,7 +40,7 @@ def review_transactions():
                 id = choice
             
             else:
-                print("Invalid choice: ID is number or 'all'")
+                print("ID must be number or 'all'.")
                 
         elif choice == "3":
             start_date = input("Enter (YYYY-MM-DD): ") or "min"
@@ -52,25 +51,21 @@ def review_transactions():
         elif choice == "5":
             try:
                 threshold = int(input("Enter threshold: ") or 0)
-                
+            
             except ValueError:
-                print("Threshold must be a number")
+                print("Threshold must be a number.")
             
         elif choice == "6":
             category = input("Enter category: ") or "all"
             
-        else:
-            print("Invalid input")
-            
-        print()                        
+        print()
 
 def manage_budget():
     options = ("0. Back", "1. Set Budget", "2. Budget Overview", "3. Delete Budget")
     
     while True:
         box_print(options, title="Choose an option")
-        choice = input("~ ")
-        print()
+        choice = valid_choice(3)
         
         if choice == "0":
             break
@@ -78,12 +73,14 @@ def manage_budget():
         elif choice == "1":
             try:
                 budget = int(input(f"Enter budget: "))
-                with open("budget.dat", "wb") as file:
-                    pickle.dump(budget, file)
-                    print("Your budget is set!")
                     
             except ValueError:
-                print("Budget must be a number")
+                print("Budget must be a number.\n")
+                continue
+                
+            with open("budget.dat", "wb") as file:
+                pickle.dump(budget, file)
+                print("Your budget is now set.\n")
             
         elif choice == "2":
                 dbtools.budget_overview()
@@ -93,24 +90,26 @@ def manage_budget():
             
             if confirmation == "Y":
                 with open("budget.dat", "wb") as file:
-                    print("Your budget plan was deleted")
+                    print("Your budget plan was deleted.\n")
                     
             else:
-                print("Deletion cancelled")
+                print("Deletion was cancelled.\n")
                 
         else:
-            print("Invalid Input")
+            print("Invalid selection.\n")
             
-        print()
         
 def make_changes(table, id):
+    if not id.isdigit():
+        print("Invalid ID.\n")
+        return None
+        
     dbtools.review_transactions(table, id, "min", "max", 0, "all")
     options = ("0. Back", "1. Edit Record", "2. Delete Record")
     
     while True:
         box_print(options, title="Choose an option")
-        choice = input("~ ")
-        print()
+        choice = valid_choice(6)
     
         if choice == "0":
             break
@@ -124,8 +123,10 @@ def make_changes(table, id):
             break
             
         else:
-            print("Invalid Input\n")
-        
+            print("Invalid selection.")
+            
+    print()
+            
 #MAIN MENU
 options = (
     "0. Exit Program",
@@ -138,11 +139,10 @@ options = (
 
 while True:
     box_print(options, title="Choose an option")
-    choice = input("~ ")
-    print()
+    choice = valid_choice(6)
     
     if choice == "0":
-        print("Program Closed")
+        print("Program closed.")
         break
         
     elif choice == "1":
@@ -158,16 +158,17 @@ while True:
         manage_budget()
         
     elif choice == "5":
-        try:
-            table_choice = int(input("Enter (1) Income or (2) Expense: ") or 1)
-            table = ("Income", "Expense")[table_choice - 1]
-            id = int(input("Enter transaction ID: "))
-            make_changes(table, id)
+        choice = input("Choose (1) Income or (2) Expense: ") or "1"
             
-        except:
-            print("Invalid Input")
+        if choice.isdigit() and choice in ("1", "2"):
+            table = ["Income", "Expense"][int(choice) - 1]
+            
+        else:
+            print("Invalid selection.")
+            continue
+
+        id = input("Enter transaction ID: ")
+        make_changes(table, id)
         
     else:
-        print("Invalid Input")
-        
-    print()
+        print("Invalid selection.")
