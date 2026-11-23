@@ -1,4 +1,4 @@
-from box_print import box_print, box_print2D
+from utils import box_print, box_print2D
 import mysql.connector as mysql
 import pickle
 import time
@@ -54,7 +54,7 @@ def add_transaction(table):
             break
             
         except ValueError:
-            print("Please enter a number")
+            print("Amount must be a number.")
             
     category = input("Enter category: ") or "-"
     date = input("Enter date (YYYY-MM-DD): ") or today
@@ -66,7 +66,7 @@ def add_transaction(table):
         ({amount}, '{category}', '{date}', '{description}')
     """)
     
-    print("Transaction added!")
+    print("Transaction was added.\n")
     cursor.execute("commit")
     
 def review_transactions(table, id, start_date, end_date, threshold, category):
@@ -90,13 +90,13 @@ def review_transactions(table, id, start_date, end_date, threshold, category):
             """)
         
         except:
-            print("Invalid date")
+            print("Invalid date.")
             break
 
         rows = cursor.fetchall()
         
         if len(rows) == 0:
-            if offset == 0: print("Empty selection")
+            if offset == 0: print("Empty selection.\n")
             break 
         
         if offset != 0:
@@ -126,18 +126,18 @@ def budget_overview():
     
     try:
         with open("budget.dat", "rb") as file:
-            budget_goal = pickle.load(file)
+            budget = pickle.load(file)
     
     except FileNotFoundError or EOFError:
-        print("No budget plan found")
+        print("No budget plan was found.")
         return None
     
     text = (
-        f"Budget - {budget_goal:,}",
+        f"Budget - {budget:,}",
         f"Earned - {earned:,}",
         f"Spent  - {spent:,}",
         f"Saved  - {saved:,}",
-        f"Status - {'Over' if saved < 0 else 'Under'} budget"
+        f"Status - {'Under' if spent < budget else 'Over'} budget"
     )
     
     box_print(text, title=f"Overview for {month_year}", space=2)
@@ -156,7 +156,7 @@ def make_changes(table, id, mode):
         """)
         
         cursor.execute("commit")
-        print(f"Transaction no. {id} was deleted")
+        print(f"Transaction no. {id} was deleted.")
         return None
     
     while True:
@@ -165,7 +165,7 @@ def make_changes(table, id, mode):
             break
         
         except ValueError:
-            print("Please enter a number")
+            print("Amount must be a number.")
     
     category = input("Enter category: ") 
     date = input("Enter date (YYYY-MM-DD): ")
@@ -187,4 +187,4 @@ def make_changes(table, id, mode):
     """)
     
     cursor.execute("commit")
-    print(f"Transaction no. {id} was edited")
+    print(f"Transaction no. {id} was edited.")
