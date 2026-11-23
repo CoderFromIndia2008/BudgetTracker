@@ -1,12 +1,11 @@
 import mysql.connector as mysql
 
-password = input("Password: ")
-connection = mysql.connect(user="root", host="localhost", passwd=password)
+password = input("Enter password: ")
+connection = mysql.connect(user="root", host="localhost", passwd=password, charset="utf8")
 cursor = connection.cursor()
-cursor.execute("use budgetTracker")
 
 cursor.execute("""
-    insert into income values
+    insert into income (amount, category, date, description) values
     (1000, "freelance", "2026-11-01", "made budget tracker software for client"),
     (2000, "item sale", "2026-11-10", "sold old furniture"),
     (5000, "freelance", "2026-11-15", "made attendance software for client"),
@@ -15,7 +14,7 @@ cursor.execute("""
     """)
         
 cursor.execute("""
-    insert into expense values
+    insert into expense (amount, category, date, description) values
     (500, "snacks", "2026-11-03", "birthday party!"),
     (1500, "repairs", "2026-11-10", "broken sink"),
     (700, "hobby", "2026-11-14", "bought a fantasy novel"),

@@ -4,17 +4,12 @@ import pickle
 
 #SUB MENUS
 def review_transactions():
-    table      = "Income"
-    id         = "all"
-    start_date = dbtools.start_date
-    end_date   = dbtools.today
-    threshold  = 0
-    category   = "all"
+    table, id, start_date, end_date, threshold, category = "Income", "all", dbtools.start_date, dbtools.today, 0, "all"
     
     while True:
         dbtools.review_transactions(table, id, start_date, end_date, threshold, category)
         options = (
-            "0. Back",
+            "0. Back", 
             f"1. Table      - {table}",
             f"2. ID         - {id}",
             f"3. Start Date - {start_date}",
@@ -27,21 +22,26 @@ def review_transactions():
         choice = input("~ ")
         print()
         
-        if choice == "0": break
-        
-        if choice == "1":
+        if choice == "0":
+            break
+            
+        elif choice == "1":
+            choice = input("Enter (1) Income or (2) Expense: ") or 1
+            
             try:
-                table_choice = int(input("Enter (1) Income or (2) Expense: ") or 1)
-                table = ["Income", "Expense"][table_choice - 1]
+                table = ["Income", "Expense"][int(choice) - 1]
+                
             except:
-                print("Invalid Input")
+                print("Invalid input")
                 
         elif choice == "2":
-            try:
-                id = int(input("Enter transaction ID: ") or 0)
-                id = id if id != 0 else "all"
-            except ValueError:
-                print("Transaction ID must be a number or 'all'")
+            choice = input("Enter transaction ID: ") or "all"
+            
+            if choice.isdigit() or choice == "all":
+                id = choice
+            
+            else:
+                print("Invalid choice: ID is number or 'all'")
                 
         elif choice == "3":
             start_date = input("Enter (YYYY-MM-DD): ") or "min"
@@ -52,6 +52,7 @@ def review_transactions():
         elif choice == "5":
             try:
                 threshold = int(input("Enter threshold: ") or 0)
+                
             except ValueError:
                 print("Threshold must be a number")
             
@@ -59,30 +60,28 @@ def review_transactions():
             category = input("Enter category: ") or "all"
             
         else:
-            print("Invalid Input")
-        print()            
+            print("Invalid input")
+            
+        print()                        
 
 def manage_budget():
-    options = (
-        "0. Back", 
-        "1. Set Budget", 
-        "2. Budget Overview",
-        "3. Delete Budget"
-    )
+    options = ("0. Back", "1. Set Budget", "2. Budget Overview", "3. Delete Budget")
     
     while True:
         box_print(options, title="Choose an option")
         choice = input("~ ")
         print()
         
-        if choice == "0": break
+        if choice == "0":
+            break
             
-        if choice == "1":
+        elif choice == "1":
             try:
                 budget = int(input(f"Enter budget: "))
-                print("Your budget is set!")
                 with open("budget.dat", "wb") as file:
                     pickle.dump(budget, file)
+                    print("Your budget is set!")
+                    
             except ValueError:
                 print("Budget must be a number")
             
@@ -91,33 +90,31 @@ def manage_budget():
                 
         elif choice == "3":
             confirmation = input("Delete transaction? [Y/N]: ").upper()
+            
             if confirmation == "Y":
                 with open("budget.dat", "wb") as file:
                     print("Your budget plan was deleted")
                     
             else:
                 print("Deletion cancelled")
-    
+                
         else:
             print("Invalid Input")
+            
         print()
-            
-            
+        
 def make_changes(table, id):
     dbtools.review_transactions(table, id, "min", "max", 0, "all")
-    options = (
-        "0. Back",
-        "1. Edit Record",
-        "2. Delete Record"
-    )
+    options = ("0. Back", "1. Edit Record", "2. Delete Record")
     
     while True:
         box_print(options, title="Choose an option")
         choice = input("~ ")
         print()
     
-        if choice == "0": break
-        
+        if choice == "0":
+            break
+            
         elif choice == "1":
             dbtools.make_changes(table, id, "edit")
             break
@@ -163,12 +160,14 @@ while True:
     elif choice == "5":
         try:
             table_choice = int(input("Enter (1) Income or (2) Expense: ") or 1)
-            table = ["Income", "Expense"][table_choice - 1]
+            table = ("Income", "Expense")[table_choice - 1]
             id = int(input("Enter transaction ID: "))
-            print()
             make_changes(table, id)
+            
         except:
-            print("Invalid Input\n")
+            print("Invalid Input")
         
     else:
-        print("Invalid Input\n")
+        print("Invalid Input")
+        
+    print()
